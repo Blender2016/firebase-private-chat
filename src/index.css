@@ -1,5 +1,17 @@
-body {
+/* body {
   font-family: Verdana, Geneva, sans-serif;
   font-size: 14px;
   background: #f2f2f2;
+} */
+
+body {
+  background-color: #f8f8f8;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-family: 'Source Sans Pro', sans-serif;
+  font-weight: 400;
+  background-image: url("https://s17.postimg.org/fr01hfe33/image.jpg");
+  background-size: cover;
+  background-repeat: none;
 }

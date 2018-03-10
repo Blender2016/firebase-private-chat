@@ -1,0 +1,161 @@
+.Left {
+    float: left;
+    width: 37.6%;
+    height: 100%;
+    border: 1px solid #e6e6e6;
+    background-color: #fff;
+  }
+.Left .Top {
+    position: relative;
+    width: 100%;
+    height: 96px;
+    padding: 29px;
+  }
+.Left .Top:after {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    display: block;
+    width: 80%;
+    height: 1px;
+    content: '';
+    background-color: #e6e6e6;
+    -webkit-transform: translate(-50%, 0);
+            transform: translate(-50%, 0);
+  }
+ .Left input {
+    float: left;
+    width: 188px;
+    height: 42px;
+    padding: 0 15px;
+    border: 1px solid #e6e6e6;
+    background-color: #eceff1;
+    border-radius: 21px;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 400;
+  }
+.Left input:focus {
+    outline: none;
+  }
+.Left a.Search {
+    display: block;
+    float: left;
+    width: 42px;
+    height: 42px;
+    margin-left: 10px;
+    border: 1px solid #e6e6e6;
+    background-color: #00b0ff;
+    background-image: url("https://s11.postimg.org/dpuahewmn/name_type.png");
+    background-repeat: no-repeat;
+    background-position: top 12px left 14px;
+    border-radius: 50%;
+  }
+
+.Left .People {
+    margin-left: -1px;
+    border-right: 1px solid #e6e6e6;
+    border-left: 1px solid #e6e6e6;
+    width: calc(100% + 2px);
+  }
+
+.Left .People .Person {
+    position: relative;
+    width: 100%;
+    padding: 12px 10% 16px;
+    cursor: pointer;
+    background-color: #fff;
+  }
+  
+.Left .People .Person:after {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    display: block;
+    width: 80%;
+    height: 1px;
+    content: '';
+    background-color: #e6e6e6;
+    -webkit-transform: translate(-50%, 0);
+            transform: translate(-50%, 0);
+  }
+
+.Left .People .Person img {
+    float: left;
+    width: 40px;
+    height: 40px;
+    margin-right: 12px;
+    border-radius: 50%;
+  }
+
+  .Left .People .Person .Image {
+    float: left;
+    width: 40px;
+    height: 40px;
+    margin-right: 12px;
+    border-radius: 50%;
+  }
+
+.Left .People .Person .Dot {
+    height: 10px;
+    width: 10px;
+    margin-right: 3px;
+    background-color: #e6f51a;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+
+
+.Left .People .Person .Name {
+    font-size: 14px;
+    line-height: 22px;
+    color: #1a1a1a;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 600;
+  }
+.Left .People .Person .Time {
+    font-size: 14px;
+    position: absolute;
+    top: 16px;
+    right: 10%;
+    padding: 0 0 5px 5px;
+    color: #999;
+    background-color: #fff;
+  }
+
+  .Left .People .Person .Unread {
+    font-size: 14px;
+    position: absolute;
+    top: 40px;
+    right: 10%;
+    padding: 0 0 5px 5px;
+    color: #999;
+    background-color: #fff;
+  }
+
+.Left .People .Person .Preview {
+    font-size: 14px;
+    display: inline-block;
+    overflow: hidden !important;
+    width: 70%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: #999;
+  }
+.Left .People .Person.active, .Left .People .Person:hover {
+    margin-top: -1px;
+    margin-left: -1px;
+    padding-top: 13px;
+    border: 0;
+    background-color: #00b0ff;
+    width: calc(100% + 2px);
+    padding-left: calc(10% + 1px);
+  }
+.Left .People .Person.active span, .Left .People .Person:hover span {
+    color: #fff;
+    background: transparent;
+  }
+.Left .People .Person.active:after, .Left .People .Person:hover:after {
+    display: none;
+  }
+
