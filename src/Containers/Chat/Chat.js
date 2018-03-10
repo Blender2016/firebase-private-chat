@@ -6,7 +6,7 @@ import Right from "../Right/Right";
 import {connect} from "react-redux";
 import firebaseApp from "../../js/firebase";
 // import uuidv4 from "uuid/v4";
-// import {withRouter} from "react-router-dom";
+import {withRouter} from "react-router-dom";
 import _ from "lodash";
 import messageModel from "../../js/models/message";
 // import userModel from "../../js/models/user";
@@ -24,8 +24,9 @@ class Chat extends Component{
     };
 
     componentWillMount(){
-        //get all users from firebase
-        this.onlineUser();
+        if(!this.props.isAuth){
+            this.props.history.push('/login');
+        }
     }
 
     getAllData(values){
@@ -305,7 +306,7 @@ class Chat extends Component{
         //check if user exists
         let ownerId = this.props.ownerId;
         database.ref('/users').child(ownerId).once('value', (snapshot)=> {    
-            if(snapshot.val !==null){
+            if(snapshot.val() !==null){
                     //update is online from firebase
                     database.ref('/users/' + ownerId).update({
                         isOnline:false,
@@ -337,7 +338,8 @@ class Chat extends Component{
           let ownerId = this.props.ownerId;
           if(ownerId){
             database.ref('/users').child(ownerId).once('value', (snapshot)=> {    
-                if(snapshot.val !==null){
+                if(snapshot.val() !==null){
+                        console.log('snapshot.val',snapshot.val());
                         //update is online from firebase
                         database.ref('/users/' + ownerId).update({
                             isOnline:true,
@@ -351,6 +353,8 @@ class Chat extends Component{
                                     this.getAllUsers(snapshot.val());
                                 }
                             });
+                }else{
+                    console.log('user not found');
                 }
             }); 
           }
@@ -392,8 +396,9 @@ const mapStateToProps = state =>{
         email:state.Auth.email,
         token:state.Auth.token,
         isOnline:state.Auth.isOnline,
-        loggedOutAt:state.Auth.loggedOutAt
+        loggedOutAt:state.Auth.loggedOutAt,
+        isAuth:state.Auth.isAuth
     };
 };
 
-export default connect(mapStateToProps)(Chat);
+export default connect(mapStateToProps)(withRouter(Chat));

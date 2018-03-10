@@ -6,15 +6,10 @@ export {
     onLogin
 } from "./Login";
 
-// export {
-//     onLogout
-// } from "./Logout";
+export {
+    onLogout
+} from "./Logout";
 
-
-// export {
-//     onAuth
-// } from "./Auth";
-
-// export {
-//     onProfileUpdate
-// } from "./UpdateProfile";
+export {
+    onProfileUpdate
+} from "./Profile";

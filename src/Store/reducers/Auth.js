@@ -78,6 +78,27 @@ const onLoginFail =(state,action)=>{
     });
 };
 
+const onUpdateStart =(state,action)=>{
+    return updateObject(state,{
+        loading:true
+    });
+};
+
+const onUpdateFail =(state,action)=>{
+    return updateObject(state,{
+        loading:false
+    });
+};
+
+const onUpdateSuccess =(state,action)=>{
+    return updateObject(state,{
+        loading:false,
+        ownerName:action.userName,
+        userImage:action.userImage
+    });
+};
+
+
 
 
 
@@ -93,6 +114,11 @@ const reducer = (state=initialState,action)=>{
          case actionTypes.ON_LOGIN_START: return onLoginStart(state,action);
          case actionTypes.ON_LOGIN_SUCCESS: return onLoginSuccess(state,action);
          case actionTypes.ON_LOGIN_FAIL: return onLoginFail(state,action);
+         //updateProfile
+        case actionTypes.ON_UPDATE_START: return onUpdateStart(state,action);
+        case actionTypes.ON_UPDATE_SUCCESS: return onUpdateSuccess(state,action);
+        case actionTypes.ON_UPDATE_FAIL: return onUpdateFail(state,action);
+        
         default: return state;
     }
 };

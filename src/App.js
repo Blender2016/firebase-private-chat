@@ -5,6 +5,8 @@ import {Route} from "react-router-dom";
 import ForgetPassword from "./Containers/ForgetPassword/ForgetPassword";
 import ResetPassword from "./Containers/ResetPassword/ResetPassword";
 import Chat from "./Containers/Chat/Chat";
+import Profile from "./Containers/Profile/Profile";
+import Logout from "./Containers/Logout";
 
 class App extends Component {
   render() {
@@ -15,8 +17,9 @@ class App extends Component {
         <Route path="/forgetpassword" component={ForgetPassword}/>
         <Route path="/resetpassword" component={ResetPassword}/>
         <Route  path='/chat' component={Chat}/>
-        {/* <Route path="/profile" component={UserProfile}/>
-        <Route  path='/chat' component={Chat}/>
+       <Route path="/profile" component={Profile}/>
+       <Route path="/logout" component={Logout}/>
+        {/* <Route  path='/chat' component={Chat}/>
         <Route path='/register' component={Register}/>
         // <Route path="/resetpassword" component={ResetPassword}/>
         <Route path="/logout" component={Logout}/> */}

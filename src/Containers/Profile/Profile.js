@@ -1,77 +1,104 @@
 import React, {Component} from "react";
-import Styles from "./Register.module.css";
+import Styles from "./Profile.module.css";
+import {message } from 'antd';
 import 'font-awesome/css/font-awesome.min.css';
 import backgroundImage from "../../assets/images/573587.png";
-import validator from 'validator';
 import {connect} from "react-redux";
+import {withRouter, Link} from "react-router-dom";
 import * as actionCreators from "../../Store/actions/index";
-import {withRouter,Link} from "react-router-dom";
 import Spinner from "../../Components/Spinner/Spinner";
+import axios from "../../axios_base";
 
-class Register extends Component{
+class Profile extends Component{
     
     state={
         imgData:null,
-
-        email:{
-            value:"",
-            isValid:true,
-            IsToutched:false,
-        },
-
-        password:{
-            value:"",
-            isValid:true,
-            IsToutched:false
-        },
-
-        confirmPassword:{
-            value:"",
-            isValid:true,
-            IsToutched:false,
-            confirmMessage:null
-        },
 
         userName:{
             value:"",
             isValid:true,
             IsToutched:false
         },
-
-        firstName:{
+        oldPassword:{
+            value:"",
+            isValid:true,
+            IsToutched:false,
+            message:""
+        },
+        password:{
             value:"",
             isValid:true,
             IsToutched:false
         },
-
-        lastName:{
+        confirmPassword:{
             value:"",
             isValid:true,
-            IsToutched:false
+            IsToutched:false,
+            confirmMessage:null
         },
-
+        visible:false,
+        passwordUpdatedMessage:"",
+        openPasswordUpdate:false,
         isValid:false
     };
 
-    componentWillReceiveProps(nextProps){
-        if(this.props.isAuth){
-            this.props.history.push('/chat');
+    componentWillMount(){
+        if(this.props.userName){
+            this.setState({
+                userName:{
+                    value:this.props.userName,
+                    isValid:true,
+                    IsToutched:false,
+                }
+            });
         }
-      }
 
-    registerClickedHandler=(e)=>{
+        if(!this.props.isAuth){
+            this.props.history.push('/login');
+        }
+    }
+
+    
+
+    updateProfileClickedHandler=(e)=>{
         e.preventDefault();
         //create a form data and append all data into it 
+        let name = this.state.userName.value;
+        if(!name){
+            name = this.props.userName;
+        }
+
+        console.log('userName',name);
+        
         var fd = new FormData();
         fd.append('imgData',this.state.imgData);
+        fd.append('userImage',this.props.userImage);
         fd.append('op','base64');
-        fd.append('first',this.state.firstName.value);
-        fd.append('last',this.state.lastName.value);
-        fd.append('username',this.state.userName.value);
-        fd.append('email',this.state.email.value);
-        fd.append('password',this.state.password.value);
-        fd.append('isOnline',true);
-        this.props.onRegister(fd);
+        fd.append('username',name);
+        fd.append('email',this.props.email);
+        this.props.onProfileUpdate(fd);
+    };
+
+
+    updatePasswordClickedHandler=(e)=>{
+        e.preventDefault();
+            let newPassword = this.state.password.value;
+            axios.patch('/updatepassword',{
+                email:this.props.email,
+                password:newPassword
+            }).then(res=>{
+                console.log('password updated successfully');
+                message.success('password updated successfully');
+                this.setState({
+                    passwordUpdatedMessage:"password updated successfully"
+                });
+            }).catch(err=>{
+                console.log('updated failed');
+                message.error('updated failed');
+                this.setState({
+                    passwordUpdatedMessage:"password updated failed"
+                });
+            });
     }
 
     handleClick=(e)=>{
@@ -96,35 +123,46 @@ class Register extends Component{
               }
     }
 
-    emailChangeHandler=(e)=>{
+
+    oldPasswordChangeHandler=(e)=>{
+
          this.setState({
-            email:{
+            oldPassword:{
                 value:e.target.value,
                 isValid:true,
-                IsToutched:true
+                IsToutched:true,
+                message:""
             }
         });
 
-        if(validator.isEmail(e.target.value)){
+        axios.post('/passwdconfirm',{
+            email:this.props.email,
+            password:this.state.oldPassword.value
+        }).then((res)=>{
+            console.log(res.data);
             this.setState({
-                email:{
-                    value:e.target.value,
+                oldPassword:{
+                    value:this.state.oldPassword.value,
                     isValid:true,
-                    IsToutched:true
+                    IsToutched:true,
+                    message:""
                 }
             });
-        }else{
+        }).catch((err)=>{
             this.setState({
-                email:{
+                oldPassword:{
+                    value:this.state.oldPassword.value,
                     isValid:false,
-                    value:e.target.value,
-                    IsToutched:true
+                    IsToutched:true,
+                    message:"Password in incorrect"
                 }
             });
-        }
+        });
 
-        this.formIsValid();
+        this.updatePasswordIsValid();
     }
+
+
 
     passwordChangeHandler=(e)=>{
 
@@ -153,7 +191,7 @@ class Register extends Component{
                 }
             });
         }
-        this.formIsValid();
+        this.updatePasswordIsValid();
     }
 
     confirmPasswordChangeHandler=(e)=>{
@@ -197,7 +235,7 @@ class Register extends Component{
                 }
             });
         }
-        this.formIsValid();
+        this.updatePasswordIsValid();
     }
 
     userNameChangeHandler=(e)=>{
@@ -227,73 +265,28 @@ class Register extends Component{
                 }
             });
         }
-        this.formIsValid();
+        // this.formIsValid();
     }
 
-    firstNameChangeHandler=(e)=>{
 
-        this.setState({
-            firstName:{
-                value:e.target.value,
-                isValid:true,
-                IsToutched:true
-            }
-        });
 
-        if(e.target.value.length > 0){
-            this.setState({
-                firstName:{
-                    value:e.target.value,
-                    isValid:true,
-                    IsToutched:true
-                }
-            });
-        }else{
-            this.setState({
-                firstName:{
-                    value:e.target.value,
-                    isValid:false,
-                    IsToutched:true
-                }
-            });
-        }
-        this.formIsValid();
-    }
-    lastNamechangeHandler=(e)=>{
 
-        this.setState({
-            lastName:{
-                value:e.target.value,
-                isValid:true,
-                IsToutched:true
-            }
-        });
+    // formIsValid =()=>{
+    //     if( this.state.userName.isValid  && this.state.userName.IsToutched  ){
+    //         this.setState({
+    //             isValid:true
+    //         });
+    //     }else{
+    //         this.setState({
+    //             isValid:false
+    //         });
+    //     }
+    // }
 
-        if(e.target.value.length > 0){
-            this.setState({
-                lastName:{
-                    value:e.target.value,
-                    isValid:true,
-                    IsToutched:true
-                }
-            });
-        }else{
-            this.setState({
-                lastName:{
-                    value:e.target.value,
-                    isValid:false,
-                    IsToutched:true
-                }
-            });
-        }
-        this.formIsValid();
-    }
-
-    formIsValid =()=>{
-        if(this.state.email.isValid && this.state.password.isValid && this.state.confirmPassword.isValid
-        && this.state.userName.isValid && this.state.firstName.isValid && this.state.lastName.isValid
-        && this.state.email.IsToutched && this.state.password.IsToutched && this.state.confirmPassword.IsToutched 
-        && this.state.userName.IsToutched && this.state.firstName.IsToutched && this.state.lastName.IsToutched
+    updatePasswordIsValid=()=>{
+        if( this.state.oldPassword.isValid  && this.state.oldPassword.IsToutched && 
+            this.state.password.isValid && this.state.confirmPassword.isValid 
+            && this.state.password.IsToutched && this.state.confirmPassword.IsToutched    
         ){
             this.setState({
                 isValid:true
@@ -305,12 +298,26 @@ class Register extends Component{
         }
     }
 
+    openChangePasswordModal=(e)=>{
+        e.preventDefault();
+        this.setState({
+            visible:true
+        });
+    }
+
+    cancelChangePasswordModal=(e)=>{
+        e.preventDefault();
+        this.setState({
+            visible:false
+        });
+    }
+
 
     
 
     render(){
-        // console.log(this.state.isValid);
-        var bcImage= this.state.imgData ? this.state.imgData : backgroundImage;
+        var userProfileImage = this.props.userImage ? this.props.userImage : backgroundImage;
+        var bcImage= this.state.imgData ? this.state.imgData : userProfileImage;
         var rowClearfix= [Styles.Clearfix,Styles.row];
 
         var formView;
@@ -322,7 +329,7 @@ class Register extends Component{
             formView=(
                 <div className={Styles.formContainer}>
                         <div className={Styles.titleContainer}>
-                            <h2>Registration Form</h2>
+                            <h2>User Profile</h2>
                         </div>
                         <div className={rowClearfix.join(' ')}>
                             <div className="">
@@ -340,18 +347,64 @@ class Register extends Component{
                                         <span>Change Image</span>
                                     </div>
                                 </a>
-                                <form onSubmit={this.registerClickedHandler}>
-                                    <div className={Styles.inputField}>
-                                        <span><i aria-hidden="true" className="fa fa-envelope"></i></span>
-                                        <input type="email" name="email" placeholder="Email" required
-                                        value={this.state.email.value}
-                                        onChange={this.emailChangeHandler} 
-                                        onKeyDown={this.emailChangeHandler}
-                                        onKeyPress={this.emailChangeHandler}
-                                        onKeyUp={this.emailChangeHandler}
+                                <form onSubmit={this.updateProfileClickedHandler}>
+                                    <div className={Styles.inputField}> 
+                                        <span><i aria-hidden="true" className="fa fa-user"></i></span>
+                                        <input type="text" name="userName" placeholder="User Name"
+                                            value={this.state.userName.value} 
+                                            onChange={this.userNameChangeHandler}
+                                            onKeyDown={this.userNameChangeHandler}
+                                            onKeyPress={this.userNameChangeHandler}
+                                            onKeyUp={this.userNameChangeHandler}
                                         />
                                     </div>
-                                    {!this.state.email.isValid ? <h6> Email is not a valid email </h6> : null}
+                                    {!this.state.userName.isValid ? <h6> Please enter your userName </h6> : null}
+                                 
+                                    {/* {this.state.isValid ? <input type="submit" value="Update"/> : <input type="submit" value="Update" disabled/>} */}
+                                    <input type="submit" value="Update"/>
+                                </form>
+                            </div>
+                        </div>
+                        <p className={Styles.credit}>   <a href="" onClick={this.openChangePasswordModal} 
+                        className={Styles.Link}> Change Password </a></p>
+                        <p className={Styles.credit}>   <Link to="/chat"  
+                                className={Styles.Link}> Goto chat </Link></p>
+                       
+                        
+                    </div>
+            );
+        }
+
+        var passwrodFormView;
+        if(this.props.loading){
+            passwrodFormView=(
+                <Spinner/>
+            );
+        }else{
+            passwrodFormView=(
+                <div className={Styles.formContainer}>
+                        <div className={Styles.titleContainer}>
+                            <h2>Update Your Password</h2>
+                        </div>
+                        <div className={rowClearfix.join(' ')}>
+                            <div className="">
+                                
+                                <form onSubmit={this.updatePasswordClickedHandler}>
+
+                                    <div className={Styles.inputField}> 
+                                        <span><i aria-hidden="true" className="fa fa-lock"></i></span>
+                                        <input type="password" name="oldPassword" placeholder="old Password" required
+                                            value={this.state.oldPassword.value} 
+                                            onChange={this.oldPasswordChangeHandler}
+                                            onMouseLeave={this.oldPasswordChangeHandler}
+                                            onMouseOut={this.oldPasswordChangeHandler}
+                                            onKeyDown={this.oldPasswordChangeHandler}
+                                            onKeyPress={this.oldPasswordChangeHandler}
+                                            onKeyUp={this.oldPasswordChangeHandler}
+                                        />
+                                    </div>
+                                    {!this.state.oldPassword.isValid ? <h6> {this.state.oldPassword.message} </h6> : null}
+
                                     <div className={Styles.inputField}> 
                                         <span><i aria-hidden="true" className="fa fa-lock"></i></span>
                                         <input type="password" name="password" placeholder="Password" required
@@ -375,73 +428,46 @@ class Register extends Component{
                                          />
                                     </div>
                                     {!this.state.confirmPassword.isValid ? <h6> {this.state.confirmPassword.confirmMessage} </h6> : null}
-                                    <div className={Styles.inputField}> 
-                                        <span><i aria-hidden="true" className="fa fa-user"></i></span>
-                                        <input type="text" name="userName" placeholder="User Name" required
-                                        value={this.state.userName.value} 
-                                            onChange={this.userNameChangeHandler}
-                                            onKeyDown={this.userNameChangeHandler}
-                                            onKeyPress={this.userNameChangeHandler}
-                                            onKeyUp={this.userNameChangeHandler}
-                                        />
-                                    </div>
-                                    {!this.state.userName.isValid ? <h6> Please enter your userName </h6> : null}
-                                    <div className={rowClearfix.join(' ')}>
-                                        <div className={Styles.colHalf}>
-                                            <div className={Styles.inputField}> 
-                                                <span><i aria-hidden="true" className="fa fa-user"></i></span>
-                                                <input type="text" name="fname" placeholder="First Name" required
-                                                    value={this.state.firstName.value}
-                                                    onChange={this.firstNameChangeHandler}
-                                                    onKeyDown={this.firstNameChangeHandler}
-                                                    onKeyPress={this.firstNameChangeHandler}
-                                                    onKeyUp={this.firstNameChangeHandler}
-                                                />
-                                            </div>
-                                            {!this.state.firstName.isValid ? <h6> Please enter your first name </h6> : null}
-                                        </div>
-                                        <div className={Styles.colHalf}>
-                                            <div className={Styles.inputField}> 
-                                                <span><i aria-hidden="true" className="fa fa-user"></i></span>
-                                                <input type="text" name="lname" placeholder="Last Name" required
-                                                    value={this.state.lastName.value}
-                                                    onChange={this.lastNamechangeHandler}
-                                                    onKeyDown={this.lastNamechangeHandler}
-                                                    onKeyPress={this.lastNamechangeHandler}
-                                                    onKeyUp={this.lastNamechangeHandler}
-                                                />
-                                            </div>
-                                            {!this.state.lastName.isValid ? <h6> Please enter your last name </h6> : null}
-                                        </div>
-                                    </div>
-                                    {this.state.isValid ? <input type="submit" value="Register"/> : <input type="submit" value="Register" disabled/>}
+                                 
+                                    {this.state.isValid ? <input type="submit" value="Update"/> : <input type="submit" value="Update" disabled/>}
                                 </form>
                             </div>
+                            <p className={Styles.credit}> {this.state.passwordUpdatedMessage} </p>
+                            <p className={Styles.credit}>   <a href=""  
+                                onClick={this.cancelChangePasswordModal}
+                                className={Styles.Link}> Close </a></p>
                         </div>
-                        <p className={Styles.credit}>Already have an account?  <Link to="/login" className={Styles.Link}>Sign in</Link></p>
+                        
+                        
                     </div>
             );
         }
+
+
         return(
             <div className={Styles.formWrapper}>
-                    {formView}
+                    {!this.state.visible ? formView : passwrodFormView}
             </div>
         );
     }
 }
 
-const mapStateToProps = state =>{
-    console.log(state);
+const mapStateToProps =state=>{
     return{
+        ownerId:state.Auth.ownerId,
+        token:state.Auth.token,
+        email:state.Auth.email,
+        userName:state.Auth.ownerName,
+        userImage:state.Auth.userImage,
         loading:state.Auth.loading,
-        isAuth:state.Auth.isAuth,
+        isAuth:state.Auth.isAuth
     }
-};
+}
+
 const mapDispatchToProps = dispatch =>{
     return{
-        onRegister:(userData) => dispatch(actionCreators.onRegister(userData))
+        onProfileUpdate:(userData) => dispatch(actionCreators.onProfileUpdate(userData))
     };
 }
 
-
-export default connect(mapStateToProps,mapDispatchToProps)(withRouter(Register));
+export default connect(mapStateToProps,mapDispatchToProps)(withRouter(Profile));

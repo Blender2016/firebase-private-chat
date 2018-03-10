@@ -9,7 +9,7 @@ import thunk from "redux-thunk";
 import {BrowserRouter} from "react-router-dom";
 import * as actionTypes from "./Store/actions/actionTypes";
 import AuthReducer from "./Store/reducers/Auth";
-// import logoutReducer from "./store/reducers/Logout";
+import logoutReducer from "./Store/reducers/Logout";
 import registerServiceWorker from './registerServiceWorker';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';         // defaults to localStorage for web
@@ -28,8 +28,8 @@ const persistConfig = {
 
 const appReducer = combineReducers({
     /* your app’s top-level reducers */
-      Auth:AuthReducer
-    // Logout:logoutReducer,
+      Auth:AuthReducer,
+      Logout:logoutReducer
   })
 
 
