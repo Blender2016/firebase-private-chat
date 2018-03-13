@@ -3,6 +3,7 @@ import Styles from "./Write.module.css";
 import firebaseApp from "../../js/firebase";
 import messageModel from "../../js/models/message";
 import {connect} from "react-redux";
+// import { message } from 'antd';
 
 var database= firebaseApp.database();
 
@@ -12,21 +13,30 @@ class Write extends Component{
     };
 
     sendClickedHandler=(e)=>{
-        this.onKeyUpClicked();
+        
         e.preventDefault();
-        // let messageId = this.props.db.ref(`/${this.props.chatId}/`).push().key;
-        let message = messageModel(this.props.ownerId,this.state.message);
-        database.ref(`/${this.props.chatId}`).push(message).then(()=>{
-            console.log('message sent');
-        }).catch((err)=>{
-            console.log('message failed',err);
-        });
 
-            this.newMessageAdded();
+        if(this.state.message){
+            this.onKeyUpClicked();
+            // let messageId = this.props.db.ref(`/${this.props.chatId}/`).push().key;
+            let message = messageModel(this.props.ownerId,this.state.message);
+            database.ref(`/${this.props.chatId}`).push(message).then(()=>{
+                console.log('message sent');
+            }).catch((err)=>{
+                console.log('message failed',err);
+            });
 
-        this.setState({
-            message:''
-        });
+                this.newMessageAdded();
+
+            this.setState({
+                message:''
+            });
+
+            this.props.scrollToBottom();
+        }else{
+            alert('please , write a message to send ');
+        }
+        
     };
 
     newMessageAdded=()=>{

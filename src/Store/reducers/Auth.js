@@ -33,7 +33,6 @@ const onRegisterSuccess =(state,action)=>{
         loggedOutAt:action.loggedOutAt,
         isAuth:true,
         loading:false,
-        time:1000
     });
 };
 
@@ -44,11 +43,11 @@ const onRegisterFail =(state,action)=>{
     });
 };
 
-const isRegistered = (state,action) =>{
-    return updateObject(state,{
-        loading:false
-    });
-}
+// const isRegistered = (state,action) =>{
+//     return updateObject(state,{
+//         loading:false
+//     });
+// }
 
 
 const onLoginStart =(state,action)=>{
@@ -78,6 +77,26 @@ const onLoginFail =(state,action)=>{
     });
 };
 
+
+const onLogoutStart=(state,action)=>{
+    return updateObject(state,{
+        loading:true
+    });
+};
+
+const onLogoutSuccess=(state,action)=>{
+    return updateObject(state,{
+        loading:false,
+        isAuth:false
+        });
+};
+
+const onLogoutFail=(state,action)=>{
+    return updateObject(state,{
+        loading:false
+    });
+};
+
 const onUpdateStart =(state,action)=>{
     return updateObject(state,{
         loading:true
@@ -98,6 +117,13 @@ const onUpdateSuccess =(state,action)=>{
     });
 };
 
+const isRegistered=(state,action)=>{
+    return updateObject(state,{
+        isAuth:true,
+        loading:false
+        });
+};
+
 
 
 
@@ -109,15 +135,21 @@ const reducer = (state=initialState,action)=>{
         case actionTypes.ON_REGISTER_START: return onRegisterStart(state,action);
         case actionTypes.ON_REGISTER_SUCCESS: return onRegisterSuccess(state,action);
         case actionTypes.ON_REGISTER_FAIL: return onRegisterFail(state,action);
-        case actionTypes.IS_REGISTERED: return isRegistered(state,action);
+        // case actionTypes.IS_REGISTERED: return isRegistered(state,action);
          //login reducers
          case actionTypes.ON_LOGIN_START: return onLoginStart(state,action);
          case actionTypes.ON_LOGIN_SUCCESS: return onLoginSuccess(state,action);
          case actionTypes.ON_LOGIN_FAIL: return onLoginFail(state,action);
+         //Logout reducer
+         case actionTypes.ON_LOGOUT_START: return onLogoutStart(state,action);
+         case actionTypes.ON_LOGOUT_SUCCESS: return onLogoutSuccess(state,action);
+         case actionTypes.ON_LOGOUT_FAIL: return onLogoutFail(state,action);
+         // user is registered
+         case actionTypes.IS_REGISTERED: return isRegistered(state,action);
          //updateProfile
-        case actionTypes.ON_UPDATE_START: return onUpdateStart(state,action);
-        case actionTypes.ON_UPDATE_SUCCESS: return onUpdateSuccess(state,action);
-        case actionTypes.ON_UPDATE_FAIL: return onUpdateFail(state,action);
+         case actionTypes.ON_UPDATE_START: return onUpdateStart(state,action);
+         case actionTypes.ON_UPDATE_SUCCESS: return onUpdateSuccess(state,action);
+         case actionTypes.ON_UPDATE_FAIL: return onUpdateFail(state,action);
         
         default: return state;
     }

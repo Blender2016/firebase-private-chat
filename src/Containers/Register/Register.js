@@ -49,15 +49,16 @@ class Register extends Component{
             isValid:true,
             IsToutched:false
         },
-
         isValid:false
     };
 
-    componentWillReceiveProps(nextProps){
+    componentWillMount(){
         if(this.props.isAuth){
-            this.props.history.push('/chat');
+                this.props.history.push('/chat');
         }
-      }
+    }
+
+
 
     registerClickedHandler=(e)=>{
         e.preventDefault();
@@ -71,7 +72,7 @@ class Register extends Component{
         fd.append('email',this.state.email.value);
         fd.append('password',this.state.password.value);
         fd.append('isOnline',true);
-        this.props.onRegister(fd);
+        this.props.onRegister(fd,this.props.history);
     }
 
     handleClick=(e)=>{
@@ -439,7 +440,7 @@ const mapStateToProps = state =>{
 };
 const mapDispatchToProps = dispatch =>{
     return{
-        onRegister:(userData) => dispatch(actionCreators.onRegister(userData))
+        onRegister:(userData,history) => dispatch(actionCreators.onRegister(userData,history))
     };
 }
 

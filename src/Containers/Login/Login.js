@@ -25,6 +25,14 @@ class Login extends Component{
         isValid:false
     };
 
+    componentWillMount(){
+        if(this.props.isAuth){
+                this.props.history.push('/chat');
+        }
+    }
+
+   
+
     LoginClickedHandler=(e)=>{
         e.preventDefault();
         //create a form data and append all data into it 
@@ -32,7 +40,7 @@ class Login extends Component{
         fd.append('email',this.state.email.value);
         fd.append('password',this.state.password.value);
         fd.append('isOnline',true);
-        this.props.onLogin(fd);
+        this.props.onLogin(fd,this.props.history);
     }
 
     emailChangeHandler=(e)=>{
@@ -181,7 +189,7 @@ const mapStateToProps = state =>{
 };
 const mapDispatchToProps = dispatch =>{
     return{
-        onLogin:(userData) => dispatch(actionCreators.onLogin(userData))
+        onLogin:(userData,history) => dispatch(actionCreators.onLogin(userData,history))
     };
 }
 

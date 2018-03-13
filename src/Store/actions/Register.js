@@ -36,7 +36,7 @@ const isRegistered = ()=>{
     };
 }
 
-export const onRegister=(userData)=>{
+export const onRegister=(userData,history)=>{
     console.log('onRegisterStart');
     return dispatch =>{
         dispatch(onRegisterStart());
@@ -58,13 +58,18 @@ export const onRegister=(userData)=>{
                 console.log('loggedOutAt',loggedOutAt);
                 let database = firebaseApp.database();
                 let user = userModel(id,imageUrl,userName,email,token,isOnline,false,loggedOutAt);
+                dispatch(onRegisterSuccess(id,imageUrl,userName,email,token,isOnline,loggedOutAt));
+                history.push('/chat');
+                
                 database.ref('/users/'+id).set(user).then(()=>{
                     dispatch(isRegistered());
-                    dispatch(onRegisterSuccess(id,imageUrl,userName,email,token,isOnline,loggedOutAt));
                     console.log('user added to firebase successfully');
+                    history.push('/chat');
+                    // dispatch(onRegisterSuccess(id,imageUrl,userName,email,token,isOnline,loggedOutAt));
                 }).catch((err)=>{
                     console.log('failed to add user to firebase',err);
                 });
+                
                 
              }      
        }).catch(err=>{

@@ -30,7 +30,7 @@ const onLoginFail=()=>{
 
 
 
-export const onLogin=(userCredentials)=>{
+export const onLogin=(userCredentials,history)=>{
     return dispatch=>{
         console.log('loading....');
         dispatch(onLoginStart());
@@ -56,6 +56,7 @@ export const onLogin=(userCredentials)=>{
             });
 
             dispatch(onLoginSuccess(id,imageUrl,userName,email,token,isOnline,loggedOutAt));
+            history.push('/chat');
         }).catch(err=>{
             dispatch(onLoginFail());
         });

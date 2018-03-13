@@ -20,13 +20,70 @@ class Chat extends Component{
         messages:[],
         chatId:null,
         notificationId:null,
-        otherId:null
+        otherId:null,
+        otherName:null,
+        otherUserImage:null,
+        notifications:[],
+        users:[]
     };
 
     componentWillMount(){
         if(!this.props.isAuth){
             this.props.history.push('/login');
         }
+
+        //  listen to all changes in notifications model
+        database.ref('/notifications').on('value',(snapshot)=>{
+            if(snapshot.val() !== null){
+                this.getAllNotifications(snapshot.val());
+            }
+        });
+
+        //get all users
+        database.ref('/users').on('value',(snapshot)=>{
+            if(snapshot.val() !== null){
+                this.getAllUsers(snapshot.val());
+            }
+        });
+    }
+
+    getAllNotifications=(values)=>{
+        let notificationsVal = values;
+        console.log('before mapping',notificationsVal);
+        let notificationsArr = Object.keys(notificationsVal).map(key => notificationsVal[key]);
+        console.log('notifications wwwww=>',notificationsArr);
+        this.setState({
+            notifications:notificationsArr
+        });
+        console.log('notifications => ',notificationsArr);
+    }
+
+    removeAllNotification=(e)=>{
+        e.preventDefault();
+        let myNotifications = _.filter(this.state.notifications,notification => notification.otherId === this.props.ownerId);
+        let notificationIdList = myNotifications.map(notification=> notification.id); 
+        console.log('notificationIdList',notificationIdList);
+        notificationIdList.forEach(element => {
+            console.log(element);
+            // database.ref(' /notifications/ ' + element).remove();
+            database.ref('/notifications').child(element).remove().then(()=> {
+                // Code after remove
+                console.log(element,'removed');
+
+                //  listen to all changes in notifications model
+                database.ref('/notifications').on("value",(snapshot)=>{
+                    if(snapshot.val() !== null){
+                        this.getAllNotifications(snapshot.val());
+                    }
+                });
+                this.setState({
+                    notifications:[]
+                });
+            });
+        });
+
+        // alert('remooved');
+        
     }
 
     getAllData(values){
@@ -64,10 +121,12 @@ class Chat extends Component{
         let ownerUsersIdList = null;
         database.ref('/users/' + this.props.ownerId).on('value',(snapshot)=>{
             if(snapshot.val() !== null && snapshot.val().hasOwnProperty('chatWith')){
-                ownerUsersIdList = snapshot.val().chatWith.find( item => item.otherId === otherUserId ).otherId;
+                // ownerUsersIdList = snapshot.val().chatWith.find( item => item.otherId === otherUserId ).otherId;
+                ownerUsersIdList = snapshot.val().chatWith.map( item => item.otherId );
             }
         });
-        alert(ownerUsersIdList);
+        console.log('otherIds',ownerUsersIdList);
+        // alert(ownerUsersIdList);
         return ownerUsersIdList;
     }
 
@@ -92,7 +151,9 @@ class Chat extends Component{
         // clean message list
         this.setState({
             messages:[],
-            otherId:user.id
+            otherId:user.id,
+            otherName:user.name,
+            otherUserImage:user.imageUrl,
         });
     
         if(this.getAllUsersThatOwnerChatWithThem(user.id) !== null){
@@ -144,7 +205,7 @@ class Chat extends Component{
         let nowChatWith={
             otherId:user.id,
             chatId:chatId,
-            unread:0
+            unread:1
         };
     
         if(chatWith!==null){
@@ -197,6 +258,14 @@ class Chat extends Component{
                 }).catch((err)=>{
                     console.log('conversation error :',err);
                 });
+
+
+                //  listen to all changes in notifications model
+                database.ref('/notifications').on('value',(snapshot)=>{
+                    if(snapshot.val() !== null){
+                        this.getAllNotifications(snapshot.val());
+                    }
+                });
     
                 // get all messages between owner and other in chat id
                 let app = database.ref(`${chatId}`);
@@ -212,7 +281,7 @@ class Chat extends Component{
                     });
             }
         }else{
-            alert('nooooooo');
+            // alert('nooooooo');
             // then owner doesn't chat with this user before
                 // create chat id 
                 let chatId = database.ref('/').push().key;
@@ -232,7 +301,7 @@ class Chat extends Component{
         let nowChatWith={
             otherId:user.id,
             chatId:chatId,
-            unread:0
+            unread:1
         };
     
         if(chatWith!==null){
@@ -284,6 +353,13 @@ class Chat extends Component{
                     console.log('success');
                 }).catch((err)=>{
                     console.log('conversation error :',err);
+                });
+
+                //  listen to all changes in notifications model
+                database.ref('/notifications').on('value',(snapshot)=>{
+                    if(snapshot.val() !== null){
+                        this.getAllNotifications(snapshot.val());
+                    }
                 });
     
                 // get all messages between owner and other in chat id
@@ -380,8 +456,16 @@ class Chat extends Component{
         return(
             <div className={Styles.Wrapper}>
                 <div className={Styles.Container}>
-                    <Left userClicked={(user)=>this.userClickedHandler(user)}/>
-                    <Right messages={this.state.messages} chatId={this.state.chatId} otherId={this.state.otherId}/>
+                    <Left userClicked={(user)=>this.userClickedHandler(user)} otherId={this.state.otherId}/>
+                    <Right messages={this.state.messages} 
+                        chatId={this.state.chatId} 
+                        otherId={this.state.otherId}
+                        otherName={this.state.otherName}
+                        otherUserImage={this.state.otherUserImage}
+                        notifications={this.state.notifications}
+                        removeAllNotification={(e)=>this.removeAllNotification(e)}
+                        users={this.state.users}
+                        />
                 </div>
             </div>
         );

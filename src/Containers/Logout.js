@@ -7,7 +7,7 @@ class Logout extends Component{
 
 
     componentWillMount(){
-         this.props.onLogout(this.props.token,this.props.ownerId);
+         this.props.onLogout(this.props.token,this.props.ownerId,this.props.history);
          localStorage.clear();
          console.log('local storage cleared done');
          this.props.history.push('/login');
@@ -31,7 +31,7 @@ const mapStateToProps=state=>{
 
 const mapDispatchToProps=dispatch=>{
     return{
-        onLogout:(token,id)=>dispatch(actionCreators.onLogout(token,id))
+        onLogout:(token,id,history)=>dispatch(actionCreators.onLogout(token,id,history))
     }
 }
 export default connect(mapStateToProps,mapDispatchToProps)(withRouter(Logout));

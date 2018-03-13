@@ -61,9 +61,15 @@ class Left extends Component{
     
 
     render(){
+        
+        var activeUser = [Styles.Person, Styles.active];
+        console.log('userid',this.props.otherId);
         var usersList = _.filter(this.state.users,(user)=> { return (user.id !== this.props.ownerId)});
         var users = usersList.map(user=>(
-                    <div key={uuidv4()} className={Styles.Person} onClick={()=>this.props.userClicked(user)}>   
+                    <div 
+                    key={uuidv4()} 
+                    className={(this.props.otherId === user.id) ? activeUser.join(' ') : Styles.Person} 
+                    onClick={()=>this.props.userClicked(user)}>   
                         <img src={user.imageUrl} alt="" />                     
                         {user.isOnline ? <Badge dot={true} style={{ backgroundColor: '#bae637',marginRight:'3px'}}/> : null}
                         <span className={Styles.Name}>{user.name}</span>
@@ -80,9 +86,9 @@ class Left extends Component{
                     {/* eslint-disable-next-line */}
                     <a href="javascript:;" onClick={this.clicked} className={Styles.Search}/>
                 </div>
-                <div className={Styles.People}>
-                    {users}
-                </div>
+                    <div className={Styles.People} style={{overflowY:'scroll',overflowX:'hidden', height:'500px'}} >
+                        {users}
+                    </div>
             </div>
         );
     }

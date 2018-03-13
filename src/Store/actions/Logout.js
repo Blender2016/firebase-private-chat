@@ -20,7 +20,7 @@ const onLogoutSuccess=()=>{
 };
 
 
-export const onLogout=(authToken,id)=>{
+export const onLogout=(authToken,id,history)=>{
     console.log('blender :',authToken);
     return dispatch=>{
         //delete token from db
@@ -37,6 +37,7 @@ export const onLogout=(authToken,id)=>{
                 }
               });            
             dispatch(onLogoutSuccess());
+            history.push('/login');
         }).catch(err=>{
             console.log('userlogout failed');
             dispatch(onLogoutFail());
