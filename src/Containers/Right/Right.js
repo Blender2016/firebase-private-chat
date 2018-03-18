@@ -3,13 +3,15 @@ import Styles from "./Right.module.css";
 import {connect} from "react-redux";
 import {Link} from "react-router-dom";
 import Write from "../Write/Write";
-import _ from 'lodash';
+// import _ from 'lodash';
 import { Menu, Dropdown, Icon, Avatar,Badge } from 'antd';
 import uuidv4 from "uuid/v4";
-import firebaseApp from "../../js/firebase";
+import {emojify} from 'react-emojione';
+
+// import firebaseApp from "../../js/firebase";
 
 
-var database= firebaseApp.database();
+// var database= firebaseApp.database();
 
 
 class Right extends Component{
@@ -111,7 +113,8 @@ class Right extends Component{
         
         var messages = this.props.messages.map(message=>(
             <div key={uuidv4()} className={message.senderId === this.props.ownerId ? bubbleMe.join(' ') : bubbleYou.join(' ')} ref="msg">
-                {message.message}
+                {/* {message.message} */}
+                {emojify(message.message)}
             </div> 
         ));
 

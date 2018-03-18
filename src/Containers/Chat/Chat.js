@@ -386,6 +386,7 @@ class Chat extends Component{
                     //update is online from firebase
                     database.ref('/users/' + ownerId).update({
                         isOnline:false,
+                        isTyping:false,
                         loggedOutAt:Date.now()
                         });
 

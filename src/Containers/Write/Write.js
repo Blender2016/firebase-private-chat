@@ -3,41 +3,80 @@ import Styles from "./Write.module.css";
 import firebaseApp from "../../js/firebase";
 import messageModel from "../../js/models/message";
 import {connect} from "react-redux";
+// import EmojiPicker from 'emoji-picker-react';
+import 'emoji-mart/css/emoji-mart.css'
+import { Picker } from 'emoji-mart'
+// import {emojify} from 'react-emojione';
+
 // import { message } from 'antd';
 
 var database= firebaseApp.database();
 
 class Write extends Component{
     state={
-        message:''
+        message:'',
+        showEmojiPicker:false
     };
 
     sendClickedHandler=(e)=>{
         
         e.preventDefault();
 
-        if(this.state.message){
-            this.onKeyUpClicked();
-            // let messageId = this.props.db.ref(`/${this.props.chatId}/`).push().key;
-            let message = messageModel(this.props.ownerId,this.state.message);
-            database.ref(`/${this.props.chatId}`).push(message).then(()=>{
-                console.log('message sent');
-            }).catch((err)=>{
-                console.log('message failed',err);
-            });
-
-                this.newMessageAdded();
-
-            this.setState({
-                message:''
-            });
-
-            this.props.scrollToBottom();
+        if(this.props.otherId){
+            if(this.state.message){
+                this.onKeyUpClicked();
+                // let messageId = this.props.db.ref(`/${this.props.chatId}/`).push().key;
+                let message = messageModel(this.props.ownerId,this.state.message);
+                database.ref(`/${this.props.chatId}`).push(message).then(()=>{
+                    console.log('message sent');
+                }).catch((err)=>{
+                    console.log('message failed',err);
+                });
+    
+                    this.newMessageAdded();
+    
+                this.setState({
+                    message:''
+                });
+    
+                this.props.scrollToBottom();
+            }else{
+                alert('please , write a message to send ');
+            }
         }else{
-            alert('please , write a message to send ');
+            alert('please, you must select a user to chat with');
         }
         
     };
+
+    enterPressedHandler=(e)=>{
+      if(this.props.otherId){
+        if (e.key == 'Enter') {
+            if(this.state.message){
+                this.onKeyUpClicked();
+                // let messageId = this.props.db.ref(`/${this.props.chatId}/`).push().key;
+                let message = messageModel(this.props.ownerId,this.state.message);
+                database.ref(`/${this.props.chatId}`).push(message).then(()=>{
+                    console.log('message sent');
+                }).catch((err)=>{
+                    console.log('message failed',err);
+                });
+
+                    this.newMessageAdded();
+
+                this.setState({
+                    message:''
+                });
+
+                this.props.scrollToBottom();
+            }else{
+                alert('please , write a message to send ');
+            }
+        }
+      }else{
+        alert('please, you must select a user to chat with');
+      }
+    }
 
     newMessageAdded=()=>{
 
@@ -47,10 +86,10 @@ class Write extends Component{
         });
         if(chatWith !== null){
             // let itemIndex = chatWith.findIndex(item => item.chatId === this.props.chatId);
-            console.log('chatId********************************]>>>>>>>>',this.props.chatId);
-            console.log('//***********************>>>{}>>>>', chatWith.find(item => item.chatId === this.props.chatId));
+            // console.log('chatId********************************]>>>>>>>>',this.props.chatId);
+            // console.log('//***********************>>>{}>>>>', chatWith.find(item => item.chatId === this.props.chatId));
             chatWith.find(item => item.chatId === this.props.chatId).unread++;
-            console.log('chatWith:---------------------->>>>>',chatWith);
+            // console.log('chatWith:---------------------->>>>>',chatWith);
             // chatWith[itemIndex].unread++
         }
 
@@ -105,23 +144,61 @@ userReadAllMessages=()=>{
         this.userReadAllMessages();
     };
 
+    showEmojiPicker=(e)=>{
+        e.preventDefault();
+        if(!this.state.showEmojiPicker){
+            this.setState({
+                showEmojiPicker:true
+            });
+        }else{
+            this.setState({
+                showEmojiPicker:false
+            });
+        }
+        
+    }
+
+    getEmojiData=(emoji, event)=>{
+        console.log(emoji);
+        var emojiText = emoji.colons;
+        var emojiMessage = this.state.message.concat(" " + emojiText);
+        console.log(emojiMessage);
+        this.setState({
+            message: emojiMessage
+        });
+    }
+
     render(){
         var writeLinkAttach = [Styles.WriteLink, Styles.Attach];
         var writeLinkSmiley = [Styles.WriteLink,Styles.Smiley];
         var writeLinkSend = [Styles.WriteLink,Styles.Send];
-        return(
-            <div className={Styles.Write}>
-                {/* eslint-disable-next-line */}
-                <a href="javascript:;" className={writeLinkAttach.join(' ')}></a>
-                <input type="text" 
-                    value={this.state.message}
-                    onChange={this.inputChangeHandler}
+        var emPicker = (
+            // <EmojiPicker onEmojiClick={(e)=>this.getEmojiData(e)}/>
+            <Picker 
+                set='emojione' 
+                onClick={(emoji, event)=>this.getEmojiData(emoji, event)}
+                style={{ position: 'absolute', bottom: '70px', right: '20px' }}
                 />
-                {/* eslint-disable-next-line */}
-                <a href="javascript:;" className={writeLinkSmiley.join(' ')}></a>
-                {/* eslint-disable-next-line */}
-                <a href="javascript:;" onClick={this.sendClickedHandler} className={writeLinkSend.join(' ')}></a>
+        );
+        return(
+            <div>
+                    <div className={Styles.Write}>
+                        {/* eslint-disable-next-line */}
+                        <a href="javascript:;" className={writeLinkAttach.join(' ')}></a>
+                        <input type="text" 
+                            value={this.state.message}
+                            onChange={this.inputChangeHandler}
+                            onKeyPress={this.enterPressedHandler}
+                        />
+                        {/* eslint-disable-next-line */}
+                        <a href="javascript:;" onClick={this.showEmojiPicker} className={writeLinkSmiley.join(' ')}></a>
+                        {/* eslint-disable-next-line */}
+                        <a href="javascript:;" onClick={this.sendClickedHandler} className={writeLinkSend.join(' ')}></a>
+                    </div>
+                    {this.state.showEmojiPicker ? emPicker : null}
+                
             </div>
+            
         );
     }
 }
