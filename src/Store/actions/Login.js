@@ -8,7 +8,7 @@ const onLoginStart=()=>{
         type:actionTyps.ON_LOGIN_START
     };
 };
-const onLoginSuccess=(id,imageUrl,userName,email,token,isOnline,loggedOutAt)=>{
+const onLoginSuccess=(id,imageUrl,userName,email,token,isOnline,isAdmin,loggedOutAt)=>{
     return{
         type:actionTyps.ON_LOGIN_SUCCESS,
         userId:id,
@@ -17,6 +17,7 @@ const onLoginSuccess=(id,imageUrl,userName,email,token,isOnline,loggedOutAt)=>{
         userMail:email,
         authToken:token,
         isOnline:isOnline,
+        isAdmin:isAdmin,
         loggedOutAt:loggedOutAt
     };
 };
@@ -41,6 +42,7 @@ export const onLogin=(userCredentials,history)=>{
             var id = res.data._id;
             var imageUrl=res.data.userImage.url;
             var email = res.data.email;
+            var isAdmin = res.data.isAdmin;
             var userName = res.data.username;
             var isOnline=true;
             var loggedOutAt=res.data.loggedOutAt;
@@ -55,7 +57,7 @@ export const onLogin=(userCredentials,history)=>{
                 loggedOutAt:null
             });
 
-            dispatch(onLoginSuccess(id,imageUrl,userName,email,token,isOnline,loggedOutAt));
+            dispatch(onLoginSuccess(id,imageUrl,userName,email,token,isOnline,isAdmin,loggedOutAt));
             history.push('/chat');
         }).catch(err=>{
             dispatch(onLoginFail());

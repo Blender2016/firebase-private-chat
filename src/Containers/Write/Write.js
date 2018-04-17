@@ -19,7 +19,7 @@ class Write extends Component{
     };
 
     sendClickedHandler=(e)=>{
-        
+
         e.preventDefault();
 
         if(this.props.otherId){
@@ -32,13 +32,14 @@ class Write extends Component{
                 }).catch((err)=>{
                     console.log('message failed',err);
                 });
-    
+
                     this.newMessageAdded();
-    
+
                 this.setState({
-                    message:''
+                    message:'',
+                    showEmojiPicker:false
                 });
-    
+
                 this.props.scrollToBottom();
             }else{
                 alert('please , write a message to send ');
@@ -46,7 +47,7 @@ class Write extends Component{
         }else{
             alert('please, you must select a user to chat with');
         }
-        
+
     };
 
     enterPressedHandler=(e)=>{
@@ -65,7 +66,8 @@ class Write extends Component{
                     this.newMessageAdded();
 
                 this.setState({
-                    message:''
+                    message:'',
+                    showEmojiPicker:false
                 });
 
                 this.props.scrollToBottom();
@@ -80,7 +82,7 @@ class Write extends Component{
 
     newMessageAdded=()=>{
 
-        let chatWith; 
+        let chatWith;
         database.ref(`/users/${this.props.ownerId}/chatWith/`).on('value',(snapshot)=>{
             chatWith = snapshot.val();
         });
@@ -116,7 +118,7 @@ class Write extends Component{
 
 userReadAllMessages=()=>{
     if(this.props.otherId){
-        let chatWith; 
+        let chatWith;
         firebaseApp.database().ref(`/users/${this.props.otherId}/chatWith/`).on('value',(snapshot)=>{
             chatWith = snapshot.val();
         });
@@ -129,7 +131,7 @@ userReadAllMessages=()=>{
         // }
         firebaseApp.database().ref('/users/' + this.props.otherId).update({
             chatWith:chatWith
-        }); 
+        });
     }
 }
 
@@ -139,6 +141,7 @@ userReadAllMessages=()=>{
         if (message.trim() !== ''){
             this.setState({
                 message:message,
+                showEmojiPicker:false
             });
         }
         this.userReadAllMessages();
@@ -155,7 +158,13 @@ userReadAllMessages=()=>{
                 showEmojiPicker:false
             });
         }
-        
+
+    }
+
+    mouseDownClickedHandler=()=>{
+      this.setState({
+        showEmojiPicker:false
+      });
     }
 
     getEmojiData=(emoji, event)=>{
@@ -174,8 +183,8 @@ userReadAllMessages=()=>{
         var writeLinkSend = [Styles.WriteLink,Styles.Send];
         var emPicker = (
             // <EmojiPicker onEmojiClick={(e)=>this.getEmojiData(e)}/>
-            <Picker 
-                set='emojione' 
+            <Picker
+                set='emojione'
                 onClick={(emoji, event)=>this.getEmojiData(emoji, event)}
                 style={{ position: 'absolute', bottom: '70px', right: '20px' }}
                 />
@@ -185,9 +194,10 @@ userReadAllMessages=()=>{
                     <div className={Styles.Write}>
                         {/* eslint-disable-next-line */}
                         <a href="javascript:;" className={writeLinkAttach.join(' ')}></a>
-                        <input type="text" 
+                        <input type="text"
                             value={this.state.message}
                             onChange={this.inputChangeHandler}
+                            onMouseDown={this.mouseDownClickedHandler}
                             onKeyPress={this.enterPressedHandler}
                         />
                         {/* eslint-disable-next-line */}
@@ -196,9 +206,9 @@ userReadAllMessages=()=>{
                         <a href="javascript:;" onClick={this.sendClickedHandler} className={writeLinkSend.join(' ')}></a>
                     </div>
                     {this.state.showEmojiPicker ? emPicker : null}
-                
+
             </div>
-            
+
         );
     }
 }

@@ -9,6 +9,7 @@ const initialState={
     token:null,
     email:null,
     isOnline:false,
+    isAdmin:false,
     loggedOutAt:null,
     isAuth:false,
     loading:false
@@ -30,6 +31,7 @@ const onRegisterSuccess =(state,action)=>{
         email:action.userMail,
         token:action.authToken,
         isOnline:action.isOnline,
+        isAdmin:action.isAdmin,
         loggedOutAt:action.loggedOutAt,
         isAuth:true,
         loading:false,
@@ -64,6 +66,7 @@ const onLoginSuccess =(state,action)=>{
         email:action.userMail,
         token:action.authToken,
         isOnline:action.isOnline,
+        isAdmin:action.isAdmin,
         loggedOutAt:action.loggedOutAt,
         isAuth:true,
         loading:false,

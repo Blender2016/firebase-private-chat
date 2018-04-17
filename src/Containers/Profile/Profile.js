@@ -3,6 +3,7 @@ import Styles from "./Profile.module.css";
 import {message } from 'antd';
 import 'font-awesome/css/font-awesome.min.css';
 import backgroundImage from "../../assets/images/573587.png";
+import md5 from 'md5';
 import {connect} from "react-redux";
 import {withRouter, Link} from "react-router-dom";
 import * as actionCreators from "../../Store/actions/index";
@@ -10,7 +11,7 @@ import Spinner from "../../Components/Spinner/Spinner";
 import axios from "../../axios_base";
 
 class Profile extends Component{
-    
+
     state={
         imgData:null,
 
@@ -58,20 +59,22 @@ class Profile extends Component{
         }
     }
 
-    
+
 
     updateProfileClickedHandler=(e)=>{
         e.preventDefault();
-        //create a form data and append all data into it 
+        //create a form data and append all data into it
         let name = this.state.userName.value;
         if(!name){
             name = this.props.userName;
         }
 
         console.log('userName',name);
-        
+
         var fd = new FormData();
-        fd.append('imgData',this.state.imgData);
+        if(this.state.imgData){
+          fd.append('imgData',this.state.imgData);
+        }
         fd.append('userImage',this.props.userImage);
         fd.append('op','base64');
         fd.append('username',name);
@@ -110,14 +113,14 @@ class Profile extends Component{
         console.log(e.target.files[0]);
           var image = e.target.files[0];
           var reader  = new FileReader();
-          
+
               reader.addEventListener("load", ()=> {
                 this.setState({
                 imgData:reader.result
                 });
                 console.log('image:' , this.state.imgData);
               }, false);
-            
+
               if (image) {
                 reader.readAsDataURL(image)
               }
@@ -284,9 +287,9 @@ class Profile extends Component{
     // }
 
     updatePasswordIsValid=()=>{
-        if( this.state.oldPassword.isValid  && this.state.oldPassword.IsToutched && 
-            this.state.password.isValid && this.state.confirmPassword.isValid 
-            && this.state.password.IsToutched && this.state.confirmPassword.IsToutched    
+        if( this.state.oldPassword.isValid  && this.state.oldPassword.IsToutched &&
+            this.state.password.isValid && this.state.confirmPassword.isValid
+            && this.state.password.IsToutched && this.state.confirmPassword.IsToutched
         ){
             this.setState({
                 isValid:true
@@ -313,11 +316,9 @@ class Profile extends Component{
     }
 
 
-    
-
     render(){
-        var userProfileImage = this.props.userImage ? this.props.userImage : backgroundImage;
-        var bcImage= this.state.imgData ? this.state.imgData : userProfileImage;
+
+        var bcImage= this.state.imgData || this.props.userImage;
         var rowClearfix= [Styles.Clearfix,Styles.row];
 
         var formView;
@@ -333,14 +334,14 @@ class Profile extends Component{
                         </div>
                         <div className={rowClearfix.join(' ')}>
                             <div className="">
-                                <input className={Styles.Upload} type="file" 
+                                <input className={Styles.Upload} type="file"
                                     onChange={this.fileClickedHandler}
                                     ref={input => this.inputElement = input}
                                     required
                                 />
                                 {/* // eslint-disable-next-line */}
                                 <a href="" className={Styles.profilePic} onClick={this.handleClick}>
-                                    <div className={Styles.profilePic} 
+                                    <div className={Styles.profilePic}
                                          style={{backgroundImage: "url(" + bcImage + ")"}}
                                     >
                                         <span className="fa fa-camera"></span>
@@ -348,10 +349,10 @@ class Profile extends Component{
                                     </div>
                                 </a>
                                 <form onSubmit={this.updateProfileClickedHandler}>
-                                    <div className={Styles.inputField}> 
+                                    <div className={Styles.inputField}>
                                         <span><i aria-hidden="true" className="fa fa-user"></i></span>
                                         <input type="text" name="userName" placeholder="User Name"
-                                            value={this.state.userName.value} 
+                                            value={this.state.userName.value}
                                             onChange={this.userNameChangeHandler}
                                             onKeyDown={this.userNameChangeHandler}
                                             onKeyPress={this.userNameChangeHandler}
@@ -359,18 +360,18 @@ class Profile extends Component{
                                         />
                                     </div>
                                     {!this.state.userName.isValid ? <h6> Please enter your userName </h6> : null}
-                                 
+
                                     {/* {this.state.isValid ? <input type="submit" value="Update"/> : <input type="submit" value="Update" disabled/>} */}
                                     <input type="submit" value="Update"/>
                                 </form>
                             </div>
                         </div>
-                        <p className={Styles.credit}>   <a href="" onClick={this.openChangePasswordModal} 
+                        <p className={Styles.credit}>   <a href="" onClick={this.openChangePasswordModal}
                         className={Styles.Link}> Change Password </a></p>
-                        <p className={Styles.credit}>   <Link to="/chat"  
+                        <p className={Styles.credit}>   <Link to="/chat"
                                 className={Styles.Link}> Goto chat </Link></p>
-                       
-                        
+
+
                     </div>
             );
         }
@@ -388,13 +389,13 @@ class Profile extends Component{
                         </div>
                         <div className={rowClearfix.join(' ')}>
                             <div className="">
-                                
+
                                 <form onSubmit={this.updatePasswordClickedHandler}>
 
-                                    <div className={Styles.inputField}> 
+                                    <div className={Styles.inputField}>
                                         <span><i aria-hidden="true" className="fa fa-lock"></i></span>
                                         <input type="password" name="oldPassword" placeholder="old Password" required
-                                            value={this.state.oldPassword.value} 
+                                            value={this.state.oldPassword.value}
                                             onChange={this.oldPasswordChangeHandler}
                                             onMouseLeave={this.oldPasswordChangeHandler}
                                             onMouseOut={this.oldPasswordChangeHandler}
@@ -405,10 +406,10 @@ class Profile extends Component{
                                     </div>
                                     {!this.state.oldPassword.isValid ? <h6> {this.state.oldPassword.message} </h6> : null}
 
-                                    <div className={Styles.inputField}> 
+                                    <div className={Styles.inputField}>
                                         <span><i aria-hidden="true" className="fa fa-lock"></i></span>
                                         <input type="password" name="password" placeholder="Password" required
-                                            value={this.state.password.value} 
+                                            value={this.state.password.value}
                                             onChange={this.passwordChangeHandler}
                                             onKeyDown={this.passwordChangeHandler}
                                             onKeyPress={this.passwordChangeHandler}
@@ -416,10 +417,10 @@ class Profile extends Component{
                                         />
                                     </div>
                                     {!this.state.password.isValid ? <h6> Password must be more than or equal to 5 characters </h6> : null}
-                                    <div className={Styles.inputField}> 
+                                    <div className={Styles.inputField}>
                                         <span><i aria-hidden="true" className="fa fa-lock"></i></span>
                                         <input type="password" name="confimPassword"
-                                         placeholder="Re-type Password" required 
+                                         placeholder="Re-type Password" required
                                             value={this.state.confirmPassword.value}
                                             onChange={this.confirmPasswordChangeHandler}
                                             onKeyDown={this.confirmPasswordChangeHandler}
@@ -428,17 +429,17 @@ class Profile extends Component{
                                          />
                                     </div>
                                     {!this.state.confirmPassword.isValid ? <h6> {this.state.confirmPassword.confirmMessage} </h6> : null}
-                                 
+
                                     {this.state.isValid ? <input type="submit" value="Update"/> : <input type="submit" value="Update" disabled/>}
                                 </form>
                             </div>
                             <p className={Styles.credit}> {this.state.passwordUpdatedMessage} </p>
-                            <p className={Styles.credit}>   <a href=""  
+                            <p className={Styles.credit}>   <a href=""
                                 onClick={this.cancelChangePasswordModal}
                                 className={Styles.Link}> Close </a></p>
                         </div>
-                        
-                        
+
+
                     </div>
             );
         }

@@ -28,7 +28,8 @@
     width: 20px;
     height: 42px;
     content: '';
-    background-image: url("https://s1.postimg.org/s5gfy283f/attachemnt.png");
+    /* background-image: url("https://s1.postimg.org/s5gfy283f/attachemnt.png"); */
+      background-image: url("https://i.imgur.com/b06odiM.png");
     background-repeat: no-repeat;
     background-position: center;
   }
@@ -38,7 +39,8 @@
     width: 20px;
     height: 42px;
     content: '';
-    background-image: url("https://s14.postimg.org/q2ug83h7h/smiley.png");
+    /* background-image: url("https://s14.postimg.org/q2ug83h7h/smiley.png"); */
+    background-image: url("https://i.imgur.com/5e8UFOA.png");
     background-repeat: no-repeat;
     background-position: center;
   }
@@ -49,7 +51,8 @@
     height: 42px;
     margin-left: 11px;
     content: '';
-    background-image: url("https://s30.postimg.org/nz9dho0pp/send.png");
+    /* background-image: url("https://s30.postimg.org/nz9dho0pp/send.png"); */
+      background-image: url("https://i.imgur.com/w3TyIST.png");
     background-repeat: no-repeat;
     background-position: center;
   }

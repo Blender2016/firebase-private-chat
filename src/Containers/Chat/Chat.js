@@ -23,6 +23,7 @@ class Chat extends Component{
         otherId:null,
         otherName:null,
         otherUserImage:null,
+        otherUserEmail:null,
         notifications:[],
         users:[]
     };
@@ -61,7 +62,7 @@ class Chat extends Component{
     removeAllNotification=(e)=>{
         e.preventDefault();
         let myNotifications = _.filter(this.state.notifications,notification => notification.otherId === this.props.ownerId);
-        let notificationIdList = myNotifications.map(notification=> notification.id); 
+        let notificationIdList = myNotifications.map(notification=> notification.id);
         console.log('notificationIdList',notificationIdList);
         notificationIdList.forEach(element => {
             console.log(element);
@@ -83,7 +84,7 @@ class Chat extends Component{
         });
 
         // alert('remooved');
-        
+
     }
 
     getAllData(values){
@@ -108,13 +109,13 @@ class Chat extends Component{
         .keys()
         .map(userKey => {
             let clonedUser = _.clone(usersVal[userKey]);
-            return clonedUser; 
+            return clonedUser;
         }).value();
         console.log('users:=>',users);
         this.setState({
             users:users
         });
-  
+
     }
 
       getAllUsersThatOwnerChatWithThem = (otherUserId) =>{
@@ -131,7 +132,7 @@ class Chat extends Component{
     }
 
     userReadAllMessages=(userId,chatId)=>{
-        let chatWith; 
+        let chatWith;
         database.ref(`/users/${userId}/chatWith/`).on('value',(snapshot)=>{
             chatWith = snapshot.val();
         });
@@ -154,13 +155,14 @@ class Chat extends Component{
             otherId:user.id,
             otherName:user.name,
             otherUserImage:user.imageUrl,
+            otherUserEmail:user.email
         });
-    
+
         if(this.getAllUsersThatOwnerChatWithThem(user.id) !== null){
             // check if user.id is in list .
             if(this.getAllUsersThatOwnerChatWithThem(user.id).includes(user.id)){
-                // then owner chat with this user before 
-                
+                // then owner chat with this user before
+
                 //get the chat id between them
                 let chatIdBetweenUs = null;
                 database.ref('/users/' + this.props.ownerId).on('value',(snapshot)=>{
@@ -168,81 +170,81 @@ class Chat extends Component{
                         chatIdBetweenUs = snapshot.val().chatWith.find( item => item.otherId === user.id ).chatId;
                     }
                 });
-    
+
                 // user read all messages
                 this.userReadAllMessages(user.id,chatIdBetweenUs);
-    
+
                 // get all messages in the chat
                 let app = database.ref(`${chatIdBetweenUs}`);
                 app.on('value', snapshot => {
                     if(snapshot.val() !== null){
                         this.getAllData(snapshot.val());
                     }
-                
+
                 });
-    
+
                 this.setState({
                         chatId:chatIdBetweenUs
                     });
-    
-                
+
+
             }else{
                 // then owner doesn't chat with this user before
-                // create chat id 
+                // create chat id
                 let chatId = database.ref('/').push().key;
-                // create notification id 
+                // create notification id
                 let notificationId = database.ref('/notifications/').push().key;
-    
+
                 // update owner chatWith list by adding otherId
                 //get all chatWith users
-        let chatWith; 
+        let chatWith;
         database.ref(`/users/${this.props.ownerId}/chatWith/`).on('value',(snapshot)=>{
             chatWith = snapshot.val();
         });
-    
-            
+
+
         //update owner user by adding users he talking with them
         let nowChatWith={
             otherId:user.id,
             chatId:chatId,
             unread:1
         };
-    
+
         if(chatWith!==null){
             chatWith.push(nowChatWith);
         }else{
             chatWith=[nowChatWith];
         }
-        
-    
+
+
         database.ref('/users/'+this.props.ownerId).update({
             chatWith:chatWith
         });
-                
+
                 // update other chatWith list by adding ownerId
-               
-                let otherChatWith; 
+
+                let otherChatWith;
                 database.ref(`/users/${user.id}/chatWith/`).on('value',(snapshot)=>{
                     otherChatWith = snapshot.val();
                 });
-                    
+
                 //update other user by adding users he talking with them
                 let userNeedToChat={
                     otherId:this.props.ownerId,
                     chatId:chatId,
                     unread:0
                 };
-            
+
                 if(otherChatWith!==null){
                     otherChatWith.push(userNeedToChat);
                 }else{
                     otherChatWith=[userNeedToChat];
                 }
-            
+
                 database.ref('/users/'+ user.id).update({
                     chatWith:otherChatWith
                 });
-    
+
                 // send welcome message to otherUser
                 let message = messageModel(this.props.ownerId,`Hello, ${user.name}`);
                 database.ref(`/${chatId}`).push(message).then(()=>{
@@ -250,7 +252,7 @@ class Chat extends Component{
                 }).catch((err)=>{
                     console.log('message failed',err);
                 });
-    
+
                 // send notification to other user
                 let notification = notificationModel(notificationId,this.props.ownerId,user.id,chatId);
                 database.ref('/notifications/'+notificationId).set(notification).then(()=>{
@@ -266,7 +268,7 @@ class Chat extends Component{
                         this.getAllNotifications(snapshot.val());
                     }
                 });
-    
+
                 // get all messages between owner and other in chat id
                 let app = database.ref(`${chatId}`);
                 app.on('value', snapshot => {
@@ -274,7 +276,7 @@ class Chat extends Component{
                         this.getAllData(snapshot.val());
                     }
                 });
-    
+
                 this.setState({
                         chatId:chatId,
                         notificationId:notificationId
@@ -283,62 +285,62 @@ class Chat extends Component{
         }else{
             // alert('nooooooo');
             // then owner doesn't chat with this user before
-                // create chat id 
+                // create chat id
                 let chatId = database.ref('/').push().key;
-                // create notification id 
+                // create notification id
                 let notificationId = database.ref('/notifications/').push().key;
-                
-    
-    
+
+
+
                 //get all chatWith users
-        let chatWith; 
+        let chatWith;
         database.ref(`/users/${this.props.ownerId}/chatWith/`).on('value',(snapshot)=>{
             chatWith = snapshot.val();
         });
-    
-            
+
+
         //update owner user by adding users he talking with them
         let nowChatWith={
             otherId:user.id,
             chatId:chatId,
             unread:1
         };
-    
+
         if(chatWith!==null){
             chatWith.push(nowChatWith);
         }else{
             chatWith=[nowChatWith];
         }
-        
-    
+
+
         database.ref('/users/'+this.props.ownerId).update({
             chatWith:chatWith
         });
-                
-                
-    
-                let otherChatWith; 
+
+
+
+                let otherChatWith;
                 database.ref(`/users/${user.id}/chatWith/`).on('value',(snapshot)=>{
                     otherChatWith = snapshot.val();
                 });
-                    
+
                 //update other user by adding users he talking with them
                 let userNeedToChat={
                     otherId:this.props.ownerId,
                     chatId:chatId,
                     unread:0
                 };
-            
+
                 if(otherChatWith!==null){
                     otherChatWith.push(userNeedToChat);
                 }else{
                     otherChatWith=[userNeedToChat];
                 }
-            
+
                 database.ref('/users/'+ user.id).update({
                     chatWith:otherChatWith
                 });
-    
+
                 // send welcome message to otherUser
                 let message = messageModel(this.props.ownerId,`Hello, ${user.name}`);
                 database.ref(`/${chatId}`).push(message).then(()=>{
@@ -346,7 +348,7 @@ class Chat extends Component{
                 }).catch((err)=>{
                     console.log('message failed',err);
                 });
-    
+
                 // send notification to other user
                 let notification = notificationModel(notificationId,this.props.ownerId,user.id,chatId);
                 database.ref('/notifications/'+notificationId).set(notification).then(()=>{
@@ -361,7 +363,7 @@ class Chat extends Component{
                         this.getAllNotifications(snapshot.val());
                     }
                 });
-    
+
                 // get all messages between owner and other in chat id
                 let app = database.ref(`${chatId}`);
                 app.on('value', snapshot => {
@@ -369,7 +371,7 @@ class Chat extends Component{
                         this.getAllData(snapshot.val());
                     }
                 });
-    
+
                 this.setState({
                         chatId:chatId,
                         notificationId:notificationId
@@ -381,7 +383,7 @@ class Chat extends Component{
     offlineUser = () => {
         //check if user exists
         let ownerId = this.props.ownerId;
-        database.ref('/users').child(ownerId).once('value', (snapshot)=> {    
+        database.ref('/users').child(ownerId).once('value', (snapshot)=> {
             if(snapshot.val() !==null){
                     //update is online from firebase
                     database.ref('/users/' + ownerId).update({
@@ -414,7 +416,7 @@ class Chat extends Component{
           //check if user exists
           let ownerId = this.props.ownerId;
           if(ownerId){
-            database.ref('/users').child(ownerId).once('value', (snapshot)=> {    
+            database.ref('/users').child(ownerId).once('value', (snapshot)=> {
                 if(snapshot.val() !==null){
                         console.log('snapshot.val',snapshot.val());
                         //update is online from firebase
@@ -433,11 +435,11 @@ class Chat extends Component{
                 }else{
                     console.log('user not found');
                 }
-            }); 
+            });
           }
     }
-    
-    
+
+
 
 
     render(){
@@ -448,7 +450,7 @@ class Chat extends Component{
             this.offlineUser();
             // return dialogText;
         }
-    
+
         window.onload=()=>{
             console.log('looooooodedd');
             this.onlineUser();
@@ -458,11 +460,12 @@ class Chat extends Component{
             <div className={Styles.Wrapper}>
                 <div className={Styles.Container}>
                     <Left userClicked={(user)=>this.userClickedHandler(user)} otherId={this.state.otherId}/>
-                    <Right messages={this.state.messages} 
-                        chatId={this.state.chatId} 
+                    <Right messages={this.state.messages}
+                        chatId={this.state.chatId}
                         otherId={this.state.otherId}
                         otherName={this.state.otherName}
                         otherUserImage={this.state.otherUserImage}
+                        otherUserEmail={this.state.otherUserEmail}
                         notifications={this.state.notifications}
                         removeAllNotification={(e)=>this.removeAllNotification(e)}
                         users={this.state.users}

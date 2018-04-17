@@ -45,9 +45,9 @@
     margin-left: 10px;
     border: 1px solid #e6e6e6;
     background-color: #00b0ff;
-    background-image: url("https://s11.postimg.org/dpuahewmn/name_type.png");
+    background-image: url("https://i.imgur.com/ZTRFAdC.png");
     background-repeat: no-repeat;
-    background-position: top 12px left 14px;
+    background-position: top 10px left 10px;
     border-radius: 50%;
   }
 
@@ -65,7 +65,7 @@
     cursor: pointer;
     background-color: #fff;
   }
-  
+
 .Left .People .Person:after {
     position: absolute;
     bottom: 0;
@@ -159,4 +159,3 @@
 .Left .People .Person.active:after, .Left .People .Person:hover:after {
     display: none;
   }
-
