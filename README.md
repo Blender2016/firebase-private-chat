@@ -1,2 +1,3 @@
 # firebase-private-chat
-[![Demo]](https://www.youtube.com/watch?v=NvrKkBluCdY&feature=youtu.be)
+[![Demo](https://img.youtube.com/vi/NvrKkBluCdY/0.jpg)](https://www.youtube.com/watch?v=NvrKkBluCdY)
+
